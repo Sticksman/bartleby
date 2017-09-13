@@ -27,9 +27,11 @@ var cfgFile string
 
 // RootCmd represents the base command when called without any subcommands
 var RootCmd = &cobra.Command{
-	Use:   "longformtext",
+	Use:   "bartleby",
 	Short: "A scrivener like text compiler for long form content",
-	Long:  `Long-form text compiler is a scrivener like compiler that allows a user to create a single document from a directory structure.`,
+	Long: `Bartleby is a long-form text compiler is a scrivener like compiler
+that allows a user to create a single document from
+a directory structure.`,
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	//	Run: func(cmd *cobra.Command, args []string) { },
@@ -50,7 +52,7 @@ func init() {
 	// Here you will define your flags and configuration settings.
 	// Cobra supports persistent flags, which, if defined here,
 	// will be global for your application.
-	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.longformtext.yaml)")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.bartleby.yaml)")
 
 	// Cobra also supports local flags, which will only run
 	// when this action is called directly.
@@ -72,7 +74,7 @@ func initConfig() {
 
 		// Search config in home directory with name ".longformtext" (without extension).
 		viper.AddConfigPath(home)
-		viper.SetConfigName(".longformtext")
+		viper.SetConfigName(".bartleby")
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

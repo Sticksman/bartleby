@@ -17,7 +17,7 @@ package main
 import (
 	"runtime"
 
-	"github.com/Sticksman/longform-text-compiler/cmd"
+	"github.com/Sticksman/bartleby/cmd"
 )
 
 func main() {

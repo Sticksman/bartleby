@@ -1,4 +1,4 @@
-PACKAGE = github.com/Sticksman/longform-text-compiler
+PACKAGE = github.com/Sticksman/bartleby
 GOEXE ?= go
 
 dep:
@@ -6,8 +6,10 @@ dep:
 	## One day
 	${GOEXE} get -u ./...
 
-build: dep
+build:
 	${GOEXE} build ${PACKAGE}
+
+all: dep build
 
 install: dep
 	${GOEXE} install ${PACKAGE}
