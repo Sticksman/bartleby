@@ -7,3 +7,6 @@ Scrivener is one of the best long form text editors because it understands that 
 However there are some minor issues with Scrivener. For one thing the text editor is fully featured and very Microsoft Word-like. Further, due to its own internal naming system, Scrivener is not compatible with other editors, not easily anyway. Finally, the compilation step, while fully featured and supporting multiple different formats, is at its heart very simple.
 
 The goal of this project is to create a small binary that is capable of compiling multiple long-form text files into a single document based off a supplied configuration.
+
+## Prereqs
+- Go 1.8.1
