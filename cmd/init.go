@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"errors"
+	"os"
 	"path/filepath"
 
 	"github.com/spf13/cobra"
@@ -23,5 +25,26 @@ func initProject(cmd *cobra.Command, args []string) error {
 		path = args[0]
 	}
 	path = filepath.FromSlash(path)
+
+	// Check if we're pointing to a directory
+	fi, err := os.Stat(path)
+	if err != nil {
+		return err
+	}
+
+	mode := fi.Mode()
+	if !mode.IsDir() {
+		return errors.New(path + " already exists but is not a directory")
+	}
+
+	err = createConfig(path)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func createConfig(path string) error {
 	return nil
 }
