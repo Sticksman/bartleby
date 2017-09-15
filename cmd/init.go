@@ -8,23 +8,27 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// InitCmd represents the initialization of a new to be compiled directory
-var InitCmd = &cobra.Command{
-	Use:   "init [path?]",
+var projectName string
+var projectPath string
+
+var initCmd = &cobra.Command{
+	Use:   "init",
 	Short: "Creates a bartleby project",
-	Long: `Creates a bartleby project at the specified path
+	Long: `Creates a bartleby project with the specified path
 or in the current directory if no path is specified.
-It does so by creating a .config.json file in the directory.
+Takes a name or uses the name of the directory as the project name.
+This command creates a .config.json file in the directory.
 You can then edit the config file to finish configuring the project.`,
 	RunE: initProject,
 }
 
+func init() {
+	initCmd.Flags().StringVarP(&projectName, "name", "n", "", "name of the project")
+	initCmd.Flags().StringVarP(&projectPath, "path", "p", ".", "path of the project")
+}
+
 func initProject(cmd *cobra.Command, args []string) error {
-	path := "."
-	if len(args) >= 1 {
-		path = args[0]
-	}
-	path = filepath.FromSlash(path)
+	path := filepath.FromSlash(projectPath)
 
 	// Check if we're pointing to a directory
 	fi, err := os.Stat(path)
@@ -37,7 +41,12 @@ func initProject(cmd *cobra.Command, args []string) error {
 		return errors.New(path + " already exists but is not a directory")
 	}
 
-	err = createConfig(path)
+	name := projectName
+	if name == "" {
+		name = filepath.Base(path)
+	}
+
+	err = createConfig(name, path)
 	if err != nil {
 		return err
 	}
@@ -45,6 +54,6 @@ func initProject(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func createConfig(path string) error {
+func createConfig(name string, path string) error {
 	return nil
 }
