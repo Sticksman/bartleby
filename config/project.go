@@ -1,5 +1,16 @@
 package config
 
+const defaultMetadataDir = ".metadata"
+const defaultHeadingDepth = 1
+const defaultSeparator = ""
+const defaultShowTitle = true
+const defaultAutoIncrementSections = true
+const defaultShowSectionClass = true
+const defaultShowSectionName = true
+
+var defaultTwoSectionClassNames = []string{"chapter", "section"}
+var defaultThreeSectionClassNames = []string{"part", "chapter", "section"}
+
 // Project defines a configuration of a long-form text project
 type Project struct {
 	Name                  string   `json:"name"`
@@ -12,4 +23,13 @@ type Project struct {
 	ShowSectionClass      bool     `json:"showSectionClass"`      // if true, will show the section class name and section number
 	ShowSectionName       bool     `json:"showSectionName"`       // If true, will use the block's name as the sectionname. Combines with Section class (e.g. Chatper 1\nThe Fire Starts)
 	Structure             []*Block `json:"structure"`             // A set of sections that will build into the final document
+}
+
+// NewProjectConfig creates a project config at the path
+func NewProjectConfig(name string, path string) error {
+	return nil
+}
+
+func loadProjectConfig(path string) (*Project, error) {
+	return nil, nil
 }
