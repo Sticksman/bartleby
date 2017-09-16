@@ -26,8 +26,18 @@ type Project struct {
 }
 
 // NewProjectConfig creates a project config at the path
-func NewProjectConfig(name string, path string) error {
-	return nil
+func NewProjectConfig(name string, path string) (*Project, error) {
+	project := &Project{
+		Name:                  name,
+		MetadataDir:           defaultMetadataDir,
+		ShowTitle:             defaultShowTitle,
+		ShowHeadingDepth:      defaultHeadingDepth,
+		Separator:             defaultSeparator,
+		AutoIncrementSections: defaultAutoIncrementSections,
+		ShowSectionClass:      defaultShowSectionClass,
+		ShowSectionName:       defaultShowSectionName,
+	}
+	return project, nil
 }
 
 func loadProjectConfig(path string) (*Project, error) {
