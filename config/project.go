@@ -1,5 +1,8 @@
 package config
 
+import "github.com/Sticksman/bartleby/compiler"
+
+const defaultConfigName = ".config.json"
 const defaultMetadataDir = ".metadata"
 const defaultHeadingDepth = 1
 const defaultSeparator = ""
@@ -25,9 +28,9 @@ type Project struct {
 	Structure             []*Block `json:"structure"`             // A set of sections that will build into the final document
 }
 
-// NewProjectConfig creates a project config at the path
-func NewProjectConfig(name string, path string) (*Project, error) {
-	project := &Project{
+// NewProject creates a project config with specific defaults
+func NewProject(name string) Project {
+	project := Project{
 		Name:                  name,
 		MetadataDir:           defaultMetadataDir,
 		ShowTitle:             defaultShowTitle,
@@ -37,6 +40,19 @@ func NewProjectConfig(name string, path string) (*Project, error) {
 		ShowSectionClass:      defaultShowSectionClass,
 		ShowSectionName:       defaultShowSectionName,
 	}
+	return project
+}
+
+// NewProjectAtPath creates a new project config and maps the structure of the target directory
+func NewProjectAtPath(name string, path string) (Project, error) {
+	project := NewProject(name)
+	ignoreFiles := []string{project.MetadataDir, defaultConfigName}
+	structure, err := compiler.MapDirectoryTree(path, ignoreFiles)
+	if err != nil {
+		return project, err
+	}
+
+	project.Structure = structure
 	return project, nil
 }
 
