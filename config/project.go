@@ -1,6 +1,13 @@
 package config
 
-import "github.com/Sticksman/bartleby/compiler"
+import (
+	"errors"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
+	"strings"
+)
 
 const defaultConfigName = ".config.json"
 const defaultMetadataDir = ".metadata"
@@ -47,7 +54,7 @@ func NewProject(name string) Project {
 func NewProjectAtPath(name string, path string) (Project, error) {
 	project := NewProject(name)
 	ignoreFiles := []string{project.MetadataDir, defaultConfigName}
-	structure, err := compiler.MapDirectoryTree(path, ignoreFiles)
+	structure, err := MapDirectoryTree(path, ignoreFiles, nil)
 	if err != nil {
 		return project, err
 	}
@@ -58,4 +65,69 @@ func NewProjectAtPath(name string, path string) (Project, error) {
 
 func loadProjectConfig(path string) (*Project, error) {
 	return nil, nil
+}
+
+// MapDirectoryTree walks the project directory and tries to create blocks from what it finds
+func MapDirectoryTree(path string, ignoreFiles []string, parent *Block) ([]*Block, error) {
+	fi, err := os.Stat(path)
+	if err != nil {
+		return nil, err
+	}
+
+	mode := fi.Mode()
+	if !mode.IsDir() {
+		return nil, errors.New(path + " is not a directory")
+	}
+
+	blocks := []*Block{}
+	fileList, err := ioutil.ReadDir(path)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, fileInfo := range fileList {
+		if !shouldReadFile(fileInfo.Name(), ignoreFiles) {
+			continue
+		}
+		// If not a dir, we want to create a block from the filename
+		block := NewBlock(transformFilenameToName(fileInfo.Name()), fileInfo.Name(), parent)
+		if fileInfo.IsDir() {
+			fp := filepath.Join(path, fileInfo.Name())
+			subblocks, err := MapDirectoryTree(fp, []string{}, &block)
+			if err != nil {
+				fmt.Printf("Could not map directory %v: %v\n", fp, err)
+				continue
+			}
+			block.Substructure = subblocks
+		}
+		blocks = append(blocks, &block)
+	}
+
+	return blocks, nil
+}
+
+func transformFilenameToName(filename string) string {
+	// Remove Extension
+	// Split underscores
+	// Titlecase
+	ext := filepath.Ext(filename)
+	protoName := filename[0 : len(filename)-len(ext)]
+
+	underscoreList := strings.Split(protoName, "_")
+	titleList := []string{}
+	for _, s := range underscoreList {
+		// Yes this will capitalize preopositions.
+		// TODO: Make a MLA fn that properly capitalizes words
+		titleList = append(titleList, strings.Title(s))
+	}
+	return strings.Join(titleList, " ")
+}
+
+func shouldReadFile(filename string, ignoreFiles []string) bool {
+	for _, ignoreFileName := range ignoreFiles {
+		if ignoreFileName == filename {
+			return false
+		}
+	}
+	return true
 }
