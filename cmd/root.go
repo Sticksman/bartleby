@@ -88,5 +88,5 @@ func initConfig() {
 }
 
 func addCommands() {
-	RootCmd.AddCommand(initCmd)
+	RootCmd.AddCommand(compileCmd)
 }
