@@ -56,7 +56,7 @@ func (p *Project) Compile() (string, error) {
 		if !ok {
 			continue
 		}
-		output = fmt.Sprintf("%s\n%s", output, content)
+		output = fmt.Sprintf("%s\n\n%s", output, content)
 	}
 
 	if output == "" {
