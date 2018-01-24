@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
-	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -17,38 +17,45 @@ var compileCmd = &cobra.Command{
 	Use:   "compile",
 	Short: "Compiles all files in the file ordering field",
 	Long:  "Takes all files listed in the config command and joins them together.",
+	Run:   compileProject,
 }
 
 func init() {
 	compileCmd.Flags().StringVarP(&metadataPath, "metadata-path", "m", ".metadata", "path to metadata")
 }
 
-func compileProject(cmd *cobra.Command, args []string) error {
+func compileProject(cmd *cobra.Command, args []string) {
 	configPath := filepath.Join(filepath.FromSlash(metadataPath), "config.json")
 
 	fi, err := os.Stat(configPath)
 	if err != nil {
-		return err
+		fmt.Printf("Error: %v", err)
+		return
 	}
 
 	mode := fi.Mode()
 	if mode.IsDir() {
-		return errors.New(configPath + " is not a file")
+		fmt.Println(configPath + " is not a file")
+		return
 	}
 
 	dat, err := ioutil.ReadFile(configPath)
 	if err != nil {
-		return err
+		fmt.Printf("Error: %v", err)
+		return
 	}
 
-	project := config.Project{}
-	json.Unmarshal(dat, &project)
+	var project config.Project
+	err = json.Unmarshal(dat, &project)
+	if err != nil {
+		fmt.Printf("Error: %v", err)
+		return
+	}
 	output, err := project.Compile()
 	if err != nil {
-		return err
+		fmt.Printf("Error: %v", err)
+		return
 	}
 
 	ioutil.WriteFile("output.md", []byte(output), 0755)
-
-	return nil
 }

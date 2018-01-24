@@ -9,8 +9,8 @@ dep:
 build:
 	${GOEXE} build ${PACKAGE}
 
-all: dep build
+all: dep install
 
-install: dep
+install:
 	${GOEXE} install ${PACKAGE}
 

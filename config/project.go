@@ -26,14 +26,14 @@ type Block struct {
 
 // Compile takes all the files in the file ordering and combines it into a single file
 func (p *Project) Compile() (string, error) {
-	blockCh := make(chan *Block, len(p.FileOrder))
+	blockCh := make(chan *Block, len(p.FileOrder)*2) // Add buffer space just in case
 	processCh := make(chan bool, 4)
 	blockContents := map[string]string{}
 	output := ""
 
 	for _, filename := range p.FileOrder {
+		processCh <- true
 		go func(name string) {
-			processCh <- true
 			p.compileFile(name, blockCh)
 			<-processCh
 		}(filename)
@@ -43,19 +43,20 @@ func (p *Project) Compile() (string, error) {
 		processCh <- true
 	}
 
+	// If all go proccesses are done, then we should be able to close both channels
 	close(processCh)
+	close(blockCh)
 
 	for block := range blockCh {
 		blockContents[block.Name] = block.Contents
 	}
-	close(blockCh)
 
 	for _, filename := range p.FileOrder {
 		content, ok := blockContents[filename]
 		if !ok {
 			continue
 		}
-		output = fmt.Sprintf("%s\n", content)
+		output = fmt.Sprintf("%s\n%s", output, content)
 	}
 
 	if output == "" {
